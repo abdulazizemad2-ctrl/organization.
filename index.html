@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IODI | الأدوات التفاعلية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   الهوية البصرية — ألوان مستمدة من شعار المنظمة
+   ========================================================= */
+:root{
+  --navy-900:#0D2B4E;   /* أزرق داكن: الموثوقية */
+  --navy-800:#0E3766;
+  --mid:#1F6FB2;        /* أزرق متوسط للتدرجات */
+  --sky:#4FC3D2;        /* أزرق سماوي: الابتكار */
+  --sky-soft:#A8E1EA;
+  --bg:#EAF4FB;         /* خلفية فاتحة */
+  --card:#FFFFFF;
+  --ink:#16263A;
+  --muted:#5B6B7D;
+  --line:#D6E5F1;
+  --ok:#1E8E5A; --ok-bg:#E6F6EE;
+  --bad:#C0392B; --bad-bg:#FBEAE8;
+  --warn:#B7791F; --warn-bg:#FDF4E3;
+  --radius:16px;
+  --shadow:0 6px 24px rgba(13,43,78,.08), 0 1px 3px rgba(13,43,78,.06);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.7;
+  font-variant-numeric:tabular-nums;
+}
+img{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+
+/* ---------- الهيدر الثابت ---------- */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(180deg,var(--navy-900),var(--navy-800));
+  color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.18);
+}
+.header-inner{max-width:1180px;margin:auto;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 auto}
+.brand img,.logo-fallback{width:48px;height:48px;border-radius:50%;flex:none}
+.brand-text{min-width:0}
+.brand-text strong{display:block;font-size:17px;line-height:1.3}
+.brand-text span{display:block;font-size:12px;color:var(--sky-soft);direction:ltr;text-align:right}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:0 1 auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;
+  padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap;font-weight:500;font-size:14px;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.tab:hover{background:rgba(255,255,255,.14)}
+.tab[aria-selected="true"]{background:var(--sky);border-color:var(--sky);color:var(--navy-900);font-weight:700}
+@media (max-width:720px){.tabs{width:100%}.brand-text strong{font-size:15px}}
+
+/* بديل الشعار في حال عدم توفر الصورة */
+.logo-fallback{display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,var(--sky),var(--mid) 55%,var(--navy-900));color:#fff;font-weight:700;font-size:12px;letter-spacing:.5px}
+
+/* ---------- القسم الترحيبي ---------- */
+.hero{max-width:1180px;margin:22px auto 0;padding:0 16px}
+.hero-card{
+  background:linear-gradient(120deg,var(--navy-800),var(--mid));color:#fff;border-radius:var(--radius);
+  padding:26px 28px;display:flex;align-items:center;gap:24px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.hero-card::after{ /* دوائر زخرفية مستوحاة من الشعار */
+  content:"";position:absolute;inset-inline-start:-80px;top:-80px;width:260px;height:260px;border-radius:50%;
+  border:18px solid rgba(79,195,210,.18);box-shadow:0 0 0 30px rgba(79,195,210,.07);
+}
+.hero-card img,.hero-card .logo-fallback{width:96px;height:96px;flex:none;position:relative;z-index:1}
+.hero-card .logo-fallback{font-size:20px}
+.hero-card h1{margin:0 0 4px;font-size:24px;line-height:1.4}
+.hero-card p{margin:0;color:#DDF3F7}
+.hero-card .slogan{margin-top:8px;color:var(--sky-soft);font-style:italic}
+@media (max-width:600px){.hero-card{flex-direction:column;text-align:center;padding:22px 18px}.hero-card h1{font-size:20px}}
+
+/* ---------- العناصر العامة ---------- */
+main{max-width:1180px;margin:auto;padding:22px 16px 40px}
+.panel{display:none;animation:fade .35s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.section-title{display:flex;align-items:center;gap:12px;margin:0 0 16px}
+.num{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:700;flex:none;background:var(--mid);color:#fff}
+.section-title h2{margin:0;font-size:22px;color:var(--navy-900);line-height:1.3}
+.section-title small{display:block;color:var(--muted);font-size:13px;font-weight:400;direction:ltr;text-align:right}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+.grid{display:grid;gap:18px}
+.grid-2{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+@media (max-width:900px){.grid-2{grid-template-columns:1fr}}
+.card h3{margin:0 0 14px;color:var(--navy-900);font-size:17px}
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-weight:600;font-size:14px;color:var(--navy-800)}
+.field .hint{font-size:12px;color:var(--muted)}
+.input,select,textarea{
+  width:100%;padding:11px 14px;border:1.5px solid var(--line);border-radius:12px;background:#FBFDFF;
+  transition:border-color .2s,box-shadow .2s;
+}
+textarea{resize:vertical;min-height:70px}
+.input:focus,select:focus,textarea:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 4px rgba(79,195,210,.2)}
+.input.invalid{border-color:var(--bad)}
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:420px){.row-2{grid-template-columns:1fr}}
+.readonly-box{padding:10px 14px;border-radius:12px;background:var(--bg);font-weight:600;color:var(--navy-800)}
+
+.btn{
+  border:none;border-radius:12px;padding:11px 18px;cursor:pointer;font-weight:600;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s,filter .2s,background .2s;
+}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--navy-800);color:#fff}
+.btn-primary:hover{filter:brightness(1.15)}
+.btn-sky{background:var(--sky);color:var(--navy-900)}
+.btn-sky:hover{filter:brightness(1.05)}
+.btn-ghost{background:transparent;color:var(--navy-800);border:1.5px solid var(--line)}
+.btn-ghost:hover{background:var(--bg)}
+.btn-ok{background:var(--ok);color:#fff}
+.btn-bad{background:var(--bad);color:#fff}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+
+.alert{padding:10px 14px;border-radius:12px;font-size:14px;margin-bottom:12px}
+.alert-bad{background:var(--bad-bg);color:var(--bad)}
+
+/* =========================================================
+   الأداة 1: محاكي التصويت
+   ========================================================= */
+.verdict{border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:16px}
+.verdict .big{font-size:26px;font-weight:700;line-height:1.4}
+.verdict .sub{font-size:14px;margin-top:4px}
+.verdict.ok{background:var(--ok-bg);color:var(--ok)}
+.verdict.bad{background:var(--bad-bg);color:var(--bad)}
+.verdict.warn{background:var(--warn-bg);color:var(--warn)}
+.verdict.idle{background:var(--bg);color:var(--muted)}
+
+.steps-list{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps-list li{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border-radius:12px;padding:10px 12px;font-size:14px}
+.steps-list .dot{width:24px;height:24px;border-radius:50%;background:var(--mid);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none;margin-top:1px}
+.steps-list li.pass .dot{background:var(--ok)}
+.steps-list li.fail .dot{background:var(--bad)}
+
+.progress-wrap{margin-bottom:18px}
+.progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+.progress{position:relative;height:16px;background:var(--line);border-radius:999px;overflow:visible}
+.progress .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--mid),var(--sky));width:0;transition:width .5s ease}
+.progress .fill.over{background:linear-gradient(90deg,var(--ok),#3CC489)}
+.progress .marker{position:absolute;top:-6px;bottom:-6px;width:3px;background:var(--navy-900);border-radius:2px;transition:inset-inline-start .5s}
+.progress .marker::after{content:attr(data-label);position:absolute;top:-22px;transform:translateX(50%);font-size:11px;white-space:nowrap;color:var(--navy-900);font-weight:600}
+
+.chart-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.chart-row svg{width:150px;height:150px;flex:none}
+
+/* ---------- السيناريوهات الجاهزة ---------- */
+.scenarios{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:8px;scrollbar-width:thin}
+.scn{flex:0 0 200px;text-align:right;background:linear-gradient(180deg,#0F2D4E,#0C2541);border:1px solid rgba(79,195,210,.2);border-radius:14px;padding:12px 14px;cursor:pointer;color:#E3EEF7;transition:transform .15s,border-color .2s,box-shadow .2s}
+.scn:hover{transform:translateY(-2px);border-color:var(--sky)}
+.scn.active{border-color:var(--sky);box-shadow:0 0 0 3px rgba(79,195,210,.25)}
+.scn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+.scn .ico{font-size:22px;line-height:1}
+.scn b{display:block;font-size:14px;margin:6px 0 2px;color:#EAF6FB;line-height:1.5}
+.scn .tag{display:inline-block;margin-top:4px;font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(79,195,210,.15);color:var(--sky)}
+.scn-label{font-size:13px;color:var(--muted);margin:0 0 8px}
+
+/* ---------- قاعة الجمعية العامة ---------- */
+.hall-card{margin-bottom:18px;scroll-margin-top:130px}
+.hall-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.agenda{font-size:14px;color:var(--muted);margin-top:4px}
+.agenda b{color:#EAF6FB}
+.hall-wrap{max-width:720px;margin:0 auto}
+#hall{width:100%;height:auto;display:block}
+.seat{transition:fill .35s,stroke .35s;transform-box:fill-box;transform-origin:center}
+.seat.empty{fill:#163657}
+.seat.absent{fill:transparent;stroke:rgba(147,175,200,.45);stroke-width:1.2;stroke-dasharray:2 2}
+.seat.pending{fill:#EAF6FB}
+.seat.yes{fill:#2BB673}
+.seat.no{fill:#E5574A}
+.seat.abs{fill:#9FB2C4}
+.seat.pop{animation:seatPop .35s ease}
+@keyframes seatPop{0%{transform:scale(.3)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+.hall-line{stroke:#F2C26B;stroke-width:2;stroke-dasharray:5 4;transition:opacity .4s}
+.hall-line-label{fill:#F2C26B;font-size:11px;font-weight:700;transition:opacity .4s}
+.gavel{transform-box:fill-box;transform-origin:70% 100%}
+.gavel.strike{animation:strike .32s ease-in 3}
+@keyframes strike{0%{transform:rotate(0)}40%{transform:rotate(-35deg)}75%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+.hall-verdict{text-align:center;font-size:22px;font-weight:700;min-height:38px;margin-top:4px;line-height:1.5}
+.hall-verdict.ok{color:#5FD49A}
+.hall-verdict.bad{color:#FF8A7A}
+.hall-verdict.warn{color:#F2C26B}
+.hall-verdict.idle{color:var(--muted);font-size:16px;font-weight:500}
+.hall-verdict small{display:block;font-size:13px;font-weight:500;color:var(--muted)}
+.pop-in{animation:verdictPop .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes verdictPop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.hall-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.stat{background:#0A223D;border-radius:12px;padding:8px;text-align:center;border:1px solid rgba(79,195,210,.12)}
+.stat b{display:block;font-size:22px;line-height:1.3}
+.stat b small{font-size:13px;color:var(--muted);font-weight:500}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.p b{color:var(--sky)}
+.stat.y b{color:#5FD49A}
+.stat.n b{color:#FF8A7A}
+.stat.a b{color:#C5D3E0}
+@media (max-width:480px){.hall-stats{grid-template-columns:repeat(2,1fr)}}
+.hall-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.hall-status{text-align:center;font-size:13px;color:var(--muted);margin-top:10px;min-height:22px}
+.sound-btn{padding:8px 12px;font-size:18px;flex:none}
+@media (prefers-reduced-motion:reduce){.seat,.seat.pop,.gavel.strike,.pop-in{animation:none !important;transition:none !important}}
+.legend{display:flex;flex-direction:column;gap:8px;font-size:14px}
+.legend span{display:flex;align-items:center;gap:8px}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block}
+
+.rules-table{width:100%;border-collapse:collapse;font-size:14px;overflow:hidden;border-radius:12px}
+.rules-table th{background:var(--navy-800);color:var(--sky-soft);text-align:right;padding:12px 14px;font-weight:600}
+.rules-table td{padding:11px 14px;border-bottom:1px solid var(--line)}
+.rules-table tr:nth-child(even) td{background:#F6FAFD}
+.rules-table td:first-child{font-weight:700;color:var(--navy-900)}
+.rules-table tr.current td{background:#E3F6F9 !important}
+.table-scroll{overflow-x:auto}
+.note-bar{margin-top:14px;background:var(--navy-800);color:#fff;border-radius:12px;padding:12px 16px;text-align:center;font-weight:600;font-size:14px}
+
+/* =========================================================
+   الأداة 2: محاكي تسوية النزاع
+   ========================================================= */
+.case-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.case-id{font-weight:700;color:var(--navy-900);direction:ltr}
+.case-meta{font-size:13px;color:var(--muted)}
+.badge{padding:4px 12px;border-radius:999px;font-size:13px;font-weight:600}
+.badge.active{background:#E3F2FB;color:var(--mid)}
+.badge.settled{background:var(--ok-bg);color:var(--ok)}
+.badge.ruled{background:var(--navy-800);color:#fff}
+
+.timeline{display:flex;align-items:flex-start;gap:0;margin:8px 0 22px;overflow-x:auto;padding-bottom:4px}
+.t-step{flex:1 1 0;min-width:96px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative}
+.t-step:not(:last-child)::after{ /* السهم الواصل بين المراحل */
+  content:"";position:absolute;top:26px;inset-inline-start:calc(50% + 30px);inset-inline-end:calc(-50% + 30px);
+  height:3px;background:var(--line);
+}
+.t-step:not(:last-child)::before{
+  content:"";position:absolute;top:21px;inset-inline-end:calc(-50% + 26px);
+  border:6.5px solid transparent;border-inline-end-color:var(--line);
+}
+.t-step.done:not(:last-child)::after{background:var(--sky)}
+.t-step.done:not(:last-child)::before{border-inline-end-color:var(--sky)}
+.t-circle{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:20px;font-weight:700;background:#fff;border:3px solid var(--line);color:var(--muted);transition:all .3s;position:relative;z-index:1}
+.t-step.current .t-circle{background:var(--navy-800);border-color:var(--sky);color:#fff;box-shadow:0 0 0 6px rgba(79,195,210,.25)}
+.t-step.done .t-circle{background:var(--sky);border-color:var(--sky);color:var(--navy-900)}
+.t-step.upcoming{opacity:.5}
+.t-step.settled .t-circle{background:var(--ok);border-color:var(--ok);color:#fff}
+.t-title{margin-top:8px;font-weight:700;font-size:14px;color:var(--navy-900);line-height:1.4}
+
+.stage-panel{background:var(--bg);border-radius:var(--radius);padding:18px}
+.stage-panel h4{margin:0 0 4px;font-size:18px;color:var(--navy-900)}
+.stage-panel .desc{margin:0 0 14px;color:var(--muted)}
+.judges{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+@media (max-width:600px){.judges{grid-template-columns:repeat(3,1fr)}}
+.judge{background:#fff;border-radius:12px;padding:10px 6px;text-align:center;border:1.5px solid var(--line)}
+.judge svg{width:30px;height:30px;margin:0 auto 4px;color:var(--mid)}
+.judge input{border:none;background:transparent;text-align:center;width:100%;font-size:12px;font-weight:600;color:var(--navy-900);padding:2px}
+.judge input:focus{outline:1px dashed var(--sky);border-radius:6px}
+.deadline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#fff;border:1.5px solid var(--sky);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.deadline strong{color:var(--navy-900)}
+.final-box{text-align:center;padding:22px;border-radius:var(--radius)}
+.final-box.settled{background:var(--ok-bg);color:var(--ok)}
+.final-box.ruled{background:var(--navy-800);color:#fff}
+.final-box .big{font-size:22px;font-weight:700}
+.final-box p{margin:6px 0 0}
+
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto}
+.log li{border-inline-start:4px solid var(--sky);background:#F6FAFD;border-radius:10px;padding:10px 12px;font-size:14px}
+.log .when{font-size:12px;color:var(--muted);direction:ltr;text-align:right}
+.log .stage{font-weight:700;color:var(--navy-800)}
+.log li.ok{border-color:var(--ok)}
+.log li.final{border-color:var(--navy-900)}
+.empty{color:var(--muted);text-align:center;padding:24px;font-size:14px}
+
+/* =========================================================
+   الأداة 3: شهادة العضوية (تصمم بمقاس A4 أفقي: 1123×794)
+   ========================================================= */
+.cert-stage{background:#DCE8F2;border-radius:var(--radius);padding:14px;overflow:hidden}
+.cert-scaler{transform-origin:top right;width:1123px;height:794px}
+.cert{
+  width:1123px;height:794px;background:#fff;position:relative;overflow:hidden;color:var(--navy-900);
+  font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+.cert-frame{position:absolute;inset:22px;border:10px solid var(--navy-800);border-radius:6px}
+.cert-frame::after{content:"";position:absolute;inset:8px;border:2.5px solid var(--sky);border-radius:3px}
+.cert-deco{position:absolute;width:300px;height:300px;opacity:.13}
+.cert-deco.tl{top:-110px;left:-110px}
+.cert-deco.br{bottom:-110px;right:-110px}
+.cert-watermark{position:absolute;left:50%;top:52%;width:430px;height:430px;transform:translate(-50%,-50%);opacity:.05}
+.cert-body{position:absolute;inset:52px 80px 82px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.cert-logo{width:108px;height:108px}
+.cert-logo.logo-fallback{font-size:22px}
+.cert-org{font-size:22px;font-weight:700;margin-top:8px;line-height:1.3}
+.cert-org-en{font-size:13px;color:var(--mid);letter-spacing:.6px;direction:ltr}
+.cert-title{margin-top:10px;font-size:42px;font-weight:700;color:var(--navy-800);line-height:1.2}
+.cert-title-en{font-size:15px;letter-spacing:4px;color:var(--sky);font-weight:600;direction:ltr;text-transform:uppercase}
+.cert-rule{width:180px;height:3px;background:linear-gradient(90deg,transparent,var(--sky),transparent);margin:12px auto}
+.cert-text{font-size:19px;line-height:2;max-width:820px;color:#22364F}
+.cert-name{display:block;font-size:34px;font-weight:700;color:var(--navy-900);margin:2px 0 0;line-height:1.5}
+.cert-name-en{display:block;font-size:16px;color:var(--mid);direction:ltr;margin-bottom:4px;font-weight:500}
+.cert-type{color:var(--mid);font-weight:700}
+.cert-meta{display:flex;gap:28px;justify-content:center;margin-top:12px;font-size:15px;color:#22364F}
+.cert-meta b{color:var(--navy-900)}
+.cert-meta .ltr{direction:ltr;display:inline-block}
+.cert-foot{margin-top:auto;width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:20px}
+.sig{text-align:center;font-size:15px}
+.sig .line{border-top:1.5px solid var(--navy-800);width:210px;margin:0 auto 6px}
+.stamp{width:112px;height:112px}
+.cert-note{margin-top:8px;font-size:12.5px;color:#7A8A9A}
+.cert-slogan{position:absolute;bottom:46px;left:0;right:0;text-align:center;font-size:14px;color:var(--mid);font-style:italic}
+
+/* =========================================================
+   الفوتر
+   ========================================================= */
+.site-footer{background:var(--navy-900);color:#C9DCEB;padding:28px 16px;text-align:center}
+.site-footer strong{color:#fff}
+.students{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px auto 0;max-width:900px}
+.students span{background:rgba(255,255,255,.07);border:1px solid rgba(79,195,210,.3);padding:5px 12px;border-radius:999px;font-size:13px}
+.site-footer .slogan{margin-top:12px;color:var(--sky);font-style:italic;font-size:14px}
+
+/* =========================================================
+   الثيم الداكن (للشاشة فقط) — الطباعة والشهادة تبقى بخلفية بيضاء
+   ========================================================= */
+@media screen{
+  :root{--muted:#93AFC8;--line:#22486F;color-scheme:dark}
+  body{background:radial-gradient(1100px 520px at 90% -8%,#12406E 0%,transparent 60%),radial-gradient(900px 500px at 0% 110%,#0E3766 0%,transparent 60%),#071A2F;color:#E3EEF7;min-height:100vh}
+  .site-header{background:rgba(7,26,47,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(79,195,210,.18)}
+  .hero-card{background:linear-gradient(120deg,#0E3766,#0B2A4D 60%,#123F6B);border:1px solid rgba(79,195,210,.25)}
+  .card{background:linear-gradient(180deg,#0F2D4E,#0C2541);border:1px solid rgba(79,195,210,.18);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .section-title h2,.card h3,.stage-panel h4,.case-id,.t-title,.rules-table td:first-child,.deadline strong,.judge input{color:#EAF6FB}
+  .num{box-shadow:0 0 0 2px rgba(79,195,210,.35)}
+  .field label,.log .stage{color:var(--sky-soft)}
+  .input,select,textarea{background:#0A223D;border-color:#24507C;color:#EAF6FB}
+  .input::placeholder,textarea::placeholder{color:#6F8CA8}
+  select option{background:#0E2A48;color:#EAF6FB}
+  .readonly-box{background:#0A223D;color:var(--sky)}
+  .steps-list li,.stage-panel,.verdict.idle,.judge,.deadline,.log li,.t-circle{background:#0A223D}
+  .btn-primary{background:var(--mid)}
+  .btn-ghost{color:#D6E8F5;border-color:#2B5784}
+  .btn-ghost:hover{background:rgba(255,255,255,.06)}
+  .verdict.ok,.final-box.settled{background:rgba(30,142,90,.16);color:#5FD49A}
+  .verdict.bad,.alert-bad{background:rgba(192,57,43,.16);color:#FF8A7A}
+  .verdict.warn{background:rgba(183,121,31,.18);color:#F2C26B}
+  .steps-list li.pass .dot{background:#1E8E5A}
+  .progress .marker{background:#fff}
+  .progress .marker::after{color:#fff}
+  .rules-table th{background:#0A223D}
+  .rules-table td{border-bottom-color:#1E4268}
+  .rules-table tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+  .rules-table tr.current td{background:rgba(79,195,210,.14) !important}
+  .note-bar{background:linear-gradient(90deg,#123D68,#1F6FB2)}
+  .t-step.done .t-circle{background:var(--sky)}
+  .t-step.settled .t-circle{background:var(--ok)}
+  .t-step.current .t-circle{background:var(--mid)}
+  .badge.active{background:rgba(31,111,178,.28);color:#8FD3F5}
+  .badge.settled{background:rgba(30,142,90,.2);color:#5FD49A}
+  .badge.ruled,.final-box.ruled{background:#123D68}
+  .log li.final{border-color:#A8E1EA}
+  .site-footer{background:#05142A;border-top:1px solid rgba(79,195,210,.15)}
+  .cert-stage{background:#0A223D;border:1px solid rgba(79,195,210,.18)}
+  #pie circle:first-child{stroke:#1A3B5E}
+  #pie text{fill:#EAF6FB}
+  #pie text + text{fill:#93AFC8}
+}
+
+/* محضر القضية: مخفي في الشاشة ويظهر عند الطباعة فقط */
+#caseReport{display:none}
+
+/* =========================================================
+   الطباعة: تُطبع الشهادة وحدها أو محضر القضية وحده
+   ========================================================= */
+@media print{
+  body{background:#fff}
+  .site-header,.hero,main,.site-footer{display:none !important}
+  body[data-print="cert"] #printSheet{display:block !important}
+  body[data-print="case"] #caseReport{display:block !important}
+  #printSheet .cert{width:297mm;height:210mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+#printSheet{display:none}
+#caseReport{font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif;color:var(--ink);padding:0}
+.rep-head{display:flex;align-items:center;gap:16px;border-bottom:3px solid var(--navy-800);padding-bottom:12px;margin-bottom:16px}
+.rep-head img,.rep-head .logo-fallback{width:70px;height:70px}
+.rep-head h1{margin:0;font-size:20px;color:var(--navy-900)}
+.rep-head p{margin:0;color:var(--mid);font-size:13px}
+.rep-title{text-align:center;font-size:22px;color:var(--navy-800);margin:6px 0 14px}
+.rep-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px}
+.rep-table th,.rep-table td{border:1px solid #C9D9E6;padding:7px 10px;text-align:right;vertical-align:top}
+.rep-table th{background:#EAF4FB;color:var(--navy-900);width:22%}
+.rep-log th{background:var(--navy-800);color:#fff;width:auto}
+.rep-sign{display:flex;justify-content:space-around;margin-top:40px;font-size:14px}
+.rep-sign div{text-align:center}
+.rep-sign .line{border-top:1px solid #333;width:180px;margin:0 auto 4px}
+</style>
+<!-- نمط الصفحة عند الطباعة (يتغير حسب ما نطبعه) -->
+<style id="pageStyle"></style>
+</head>
+<body>
+
+<!-- ===================== الهيدر ===================== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <img class="js-logo" alt="شعار المنظمة">
+      <div class="brand-text">
+        <strong>المنظمة الدولية للتنمية والابتكار</strong>
+        <span>International Organization for Development &amp; Innovation · IODI</span>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="الأدوات">
+      <button class="tab" role="tab" aria-selected="true"  data-tab="vote">محاكي التصويت</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="dispute">تسوية النزاع</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="cert">شهادة العضوية</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ===================== القسم الترحيبي ===================== -->
+<section class="hero">
+  <div class="hero-card">
+    <img class="js-logo" alt="">
+    <div style="position:relative;z-index:1">
+      <h1>أدوات المنظمة التفاعلية</h1>
+      <p>رؤيتنا: أن تصبح المنظمة منصة دولية رائدة في التنمية والابتكار، تسهم في بناء مجتمعات معرفية متقدمة ومستدامة.</p>
+      <p class="slogan">«نبتكر اليوم لنصنع مستقبل الغد» — المقر: الرياض، المملكة العربية السعودية</p>
+    </div>
+  </div>
+</section>
+
+<main>
+<!-- =========================================================
+     الأداة 1: محاكي التصويت
+     ========================================================= -->
+<section class="panel active" id="panel-vote" role="tabpanel">
+  <div class="section-title"><div class="num">1</div><h2>محاكي التصويت في الجمعية العامة<small>Voting Simulator</small></h2></div>
+
+  <!-- سيناريوهات جاهزة: تعبّئ الأرقام بنقرة -->
+  <p class="scn-label">اختاري بندًا جاهزًا من جدول أعمال الجمعية العامة، أو أدخلي الأرقام يدويًا:</p>
+  <div class="scenarios" id="scenarios"></div>
+
+  <!-- القاعة المرئية -->
+  <div class="card hall-card" id="hallCard">
+    <div class="hall-top">
+      <div>
+        <h3 style="margin:0">قاعة الجمعية العامة</h3>
+        <div class="agenda" id="agenda"></div>
+      </div>
+      <button class="btn btn-ghost sound-btn" id="soundBtn" type="button" aria-pressed="true" title="تشغيل/إيقاف الصوت">🔊</button>
+    </div>
+    <div class="hall-wrap"><svg id="hall" viewBox="0 0 420 250" role="img" aria-label="مقاعد الدول الأعضاء"></svg></div>
+    <div class="hall-verdict idle" id="hallVerdict"></div>
+    <div class="hall-stats">
+      <div class="stat p"><b id="sPresent">0</b><span>الحاضرون</span></div>
+      <div class="stat y"><b id="sYes">0</b><span>مؤيد</span></div>
+      <div class="stat n"><b id="sNo">0</b><span>معارض</span></div>
+      <div class="stat a"><b id="sAbs">0</b><span>ممتنع</span></div>
+    </div>
+    <div class="hall-controls"><button class="btn btn-sky" id="liveBtn" type="button">▶ بدء الجلسة الحية</button></div>
+    <div class="hall-status" id="hallStatus"></div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>بيانات الجلسة</h3>
+      <div id="voteError" class="alert alert-bad" hidden></div>
+      <div class="field">
+        <label for="vType">نوع القرار</label>
+        <select id="vType"></select>
+      </div>
+      <div class="row-2">
+        <div class="field"><label for="vTotal">عدد الدول الأعضاء الكلي</label><input class="input" id="vTotal" type="number" min="1" step="1" inputmode="numeric" value="30"></div>
+        <div class="field"><label for="vPresent">عدد الحاضرين</label><input class="input" id="vPresent" type="number" min="0" step="1" inputmode="numeric" value="20"></div>
+        <div class="field"><label for="vFor">عدد المؤيدين</label><input class="input" id="vFor" type="number" min="0" step="1" inputmode="numeric" value="11"></div>
+        <div class="field"><label for="vAgainst">عدد المعارضين</label><input class="input" id="vAgainst" type="number" min="0" step="1" inputmode="numeric" value="9"></div>
+      </div>
+      <div class="field">
+        <label>الممتنعون (يُحسب تلقائيًا)</label>
+        <div class="readonly-box" id="vAbstain">0</div>
+        <span class="hint">الممتنعون = الحاضرون − المؤيدون − المعارضون</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="vReset" type="button">إعادة تعيين</button>
+      </div>
+    </div>
+
+    <div class="card" aria-live="polite">
+      <h3>نتيجة التصويت</h3>
+      <div class="verdict idle" id="verdict"><div class="big">—</div></div>
+      <ol class="steps-list" id="vSteps"></ol>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-label"><span id="pLabelA"></span><span id="pLabelB"></span></div>
+        <div class="progress"><div class="fill" id="pFill"></div><div class="marker" id="pMarker" data-label="الحد المطلوب"></div></div>
+      </div>
+      <div class="chart-row">
+        <svg viewBox="0 0 42 42" id="pie" aria-label="توزيع الأصوات"></svg>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>قواعد الميثاق — نظام اتخاذ القرارات والتصويت</h3>
+    <div class="table-scroll">
+      <table class="rules-table" id="rulesTable">
+        <thead><tr><th>الموضوع</th><th>آلية الاعتماد</th><th>أساس الحساب</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="note-bar">لكل دولة عضو صوت واحد في الجمعية العامة، وتصدر المسائل الجوهرية بأغلبية الثلثين</div>
+  </div>
+</section>
+
+<!-- =========================================================
+     الأداة 2: محاكي تسوية النزاع
+     ========================================================= -->
+<section class="panel" id="panel-dispute" role="tabpanel">
+  <div class="section-title"><div class="num" style="background:var(--sky);color:var(--navy-900)">2</div><h2>محاكي تسوية النزاعات<small>Dispute Settlement Simulator</small></h2></div>
+
+  <!-- نموذج فتح القضية -->
+  <div class="card" id="caseForm">
+    <h3>فتح ملف نزاع جديد</h3>
+    <div id="caseError" class="alert alert-bad" hidden></div>
+    <div class="row-2">
+      <div class="field"><label for="dA">الدولة الأولى</label><input class="input" id="dA" placeholder="مثال: الدولة أ"></div>
+      <div class="field"><label for="dB">الدولة الثانية</label><input class="input" id="dB" placeholder="مثال: الدولة ب"></div>
+    </div>
+    <div class="field"><label for="dTopic">موضوع الخلاف</label><textarea class="input" id="dTopic" placeholder="اكتبي وصفًا موجزًا لموضوع النزاع"></textarea></div>
+    <button class="btn btn-primary" id="openCase" type="button">فتح ملف النزاع</button>
+  </div>
+
+  <!-- مساحة القضية الجارية -->
+  <div id="caseArea" hidden>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="case-head">
+          <div>
+            <div class="case-id" id="caseId"></div>
+            <div class="case-meta" id="caseMeta"></div>
+          </div>
+          <span class="badge active" id="caseBadge">قيد النظر</span>
+        </div>
+        <div class="timeline" id="timeline"></div>
+        <div id="stageArea"></div>
+        <div class="btn-row" style="margin-top:16px">
+          <button class="btn btn-sky" id="printCase" type="button">طباعة محضر القضية</button>
+          <button class="btn btn-ghost" id="newCase" type="button">قضية جديدة</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>سجل القضية</h3>
+        <ul class="log" id="log"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     الأداة 3: شهادة العضوية
+     ========================================================= -->
+<section class="panel" id="panel-cert" role="tabpanel">
+  <div class="section-title"><div class="num" style="background:var(--navy-800)">3</div><h2>إصدار شهادة العضوية<small>Membership Certificate</small></h2></div>
+
+  <div class="grid" style="grid-template-columns:minmax(0,320px) minmax(0,1fr)" id="certGrid">
+    <div class="card">
+      <h3>بيانات العضو</h3>
+      <div class="field"><label for="cName">اسم الدولة أو الجهة (عربي)</label><input class="input" id="cName" placeholder="مثال: المملكة العربية السعودية"></div>
+      <div class="field"><label for="cNameEn">الاسم بالإنجليزية (اختياري)</label><input class="input" id="cNameEn" dir="ltr" placeholder="e.g. Kingdom of Saudi Arabia"></div>
+      <div class="field">
+        <label for="cType">نوع العضوية</label>
+        <select id="cType">
+          <option value="F">عضو مؤسس</option>
+          <option value="M" selected>عضو عامل</option>
+          <option value="O">عضو مراقب</option>
+          <option value="P">شريك استراتيجي</option>
+        </select>
+      </div>
+      <div class="field"><label for="cDate">تاريخ الإصدار</label><input class="input" id="cDate" type="date"></div>
+      <div class="field">
+        <label>رقم العضوية</label>
+        <div class="readonly-box" id="cNoBox" dir="ltr" style="text-align:right"></div>
+        <span class="hint">يتولد تلقائيًا حسب نوع العضوية</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="printCert" type="button">طباعة</button>
+        <button class="btn btn-sky" id="savePdf" type="button">حفظ PDF</button>
+        <button class="btn btn-ghost" id="newCert" type="button">شهادة جديدة</button>
+      </div>
+      <p class="hint" style="font-size:12px;color:var(--muted);margin:10px 0 0">لحفظ PDF: اختاري «حفظ بتنسيق PDF» من نافذة الطباعة.</p>
+    </div>
+
+    <div class="cert-stage" id="certStage">
+      <div class="cert-scaler" id="certScaler">
+        <div class="cert" id="certificate"></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ===================== الفوتر ===================== -->
+<footer class="site-footer">
+  <strong>المنظمة الدولية للتنمية والابتكار | IODI</strong>
+  <div style="margin-top:6px;font-size:13px">الطالبات المشاركات</div>
+  <div class="students">
+    <span>حياة العتيبي</span><span>جود العوفي</span><span>ليان الحربي</span><span>خولة العطيفي</span>
+    <span>رتال الهوساوي</span><span>بدور المطيري</span><span>وجن الحجيلي</span>
+  </div>
+  <div class="slogan">«نبتكر اليوم لنصنع مستقبل الغد»</div>
+</footer>
+
+<!-- نسخ مخصصة للطباعة -->
+<div id="printSheet"></div>
+<div id="caseReport"></div>
+
+<script>
+/* =========================================================
+   الشعار: صورة مضمّنة داخل الملف.
+   لتغيير الشعار: استبدلي قيمة LOGO_SRC برابط صورة أخرى (مثل "logo.png").
+   إذا تُركت فارغة يظهر بديل دائري مكتوب فيه IODI.
+   ========================================================= */
+const LOGO_SRC = "data:image/webp;base64,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";
+
+/* إنشاء عنصر الشعار (صورة أو بديل) */
+function logoHTML(cls = "") {
+  return LOGO_SRC
+    ? `<img src="${LOGO_SRC}" class="${cls}" alt="شعار المنظمة">`
+    : `<div class="logo-fallback ${cls}">IODI</div>`;
+}
+document.querySelectorAll(".js-logo").forEach(img => {
+  if (LOGO_SRC) img.src = LOGO_SRC;
+  else img.outerHTML = `<div class="logo-fallback"></div>`.replace("></div>", ">IODI</div>");
+});
+
+/* أدوات مساعدة عامة */
+const $ = id => document.getElementById(id);
+const pad = (n, l = 2) => String(n).padStart(l, "0");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// تنسيق التاريخ والوقت: 08/11/2026 – 19:05
+const fmtDate = d => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+const fmtDateTime = d => `${fmtDate(d)} – ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+/* =========================================================
+   التبويبات
+   ========================================================= */
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t === tab));
+    document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + tab.dataset.tab));
+    if (tab.dataset.tab === "cert") fitCert();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+
+/* =========================================================
+   الأداة 1: محاكي التصويت
+   ---------------------------------------------------------
+   كل قاعدة تحدد:
+   - base: أساس الحساب (الحاضرون أو العدد الكلي)
+   - need(n): عدد الأصوات المؤيدة المطلوب
+   ========================================================= */
+const RULES = [
+  { id: "ordinary", name: "القرارات العادية", rule: "الأغلبية البسيطة للأعضاء الحاضرين", base: "present",
+    need: n => Math.floor(n / 2) + 1, formula: n => `⌊${n} ÷ 2⌋ + 1` },
+  { id: "newMember", name: "قبول عضو جديد", rule: "أغلبية ثلثي الأعضاء الحاضرين", base: "present",
+    need: n => Math.ceil(2 * n / 3), formula: n => `⌈ثلثا ${n}⌉` },
+  { id: "suspend", name: "تعليق العضوية", rule: "أغلبية الثلثين", base: "present",
+    need: n => Math.ceil(2 * n / 3), formula: n => `⌈ثلثا ${n}⌉` },
+  { id: "budget", name: "الميزانية والحساب الختامي", rule: "أغلبية الثلثين", base: "present",
+    need: n => Math.ceil(2 * n / 3), formula: n => `⌈ثلثا ${n}⌉` },
+  { id: "amend", name: "تعديل الميثاق", rule: "موافقة ثلثي الأعضاء", base: "total",
+    need: n => Math.ceil(2 * n / 3), formula: n => `⌈ثلثا ${n}⌉` },
+  { id: "dissolve", name: "حل المنظمة", rule: "أغلبية ثلاثة أرباع الأعضاء", base: "total",
+    need: n => Math.ceil(3 * n / 4), formula: n => `⌈ثلاثة أرباع ${n}⌉` },
+];
+const baseLabel = b => b === "present" ? "الأعضاء الحاضرون" : "العدد الكلي للأعضاء";
+
+// تعبئة القائمة المنسدلة وجدول القواعد
+$("vType").innerHTML = RULES.map(r => `<option value="${r.id}">${r.name}</option>`).join("");
+$("rulesTable").querySelector("tbody").innerHTML =
+  RULES.map(r => `<tr data-id="${r.id}"><td>${r.name}</td><td>${r.rule}</td><td>${baseLabel(r.base)}</td></tr>`).join("") +
+  `<tr data-id="quorum"><td>النصاب القانوني</td><td>حضور أغلبية الأعضاء</td><td>العدد الكلي (يُفحص أولًا)</td></tr>`;
+
+// قراءة رقم صحيح من حقل، مع التحقق
+function readInt(id) {
+  const el = $(id), raw = el.value.trim();
+  const ok = raw !== "" && /^\d+$/.test(raw);
+  el.classList.toggle("invalid", !ok);
+  return ok ? parseInt(raw, 10) : null;
+}
+
+function computeVote() {
+  const rule = RULES.find(r => r.id === $("vType").value);
+  document.querySelectorAll("#rulesTable tbody tr").forEach(tr => tr.classList.toggle("current", tr.dataset.id === rule.id));
+
+  const total = readInt("vTotal"), present = readInt("vPresent"), yes = readInt("vFor"), no = readInt("vAgainst");
+  const errors = [];
+  if ([total, present, yes, no].some(v => v === null)) errors.push("أدخلي أعدادًا صحيحة موجبة فقط (بدون كسور أو أرقام سالبة).");
+  else {
+    if (total < 1) errors.push("عدد الدول الأعضاء يجب أن يكون 1 على الأقل.");
+    if (present > total) { errors.push("عدد الحاضرين لا يمكن أن يتجاوز العدد الكلي للأعضاء."); $("vPresent").classList.add("invalid"); }
+    if (yes + no > present) { errors.push("مجموع المؤيدين والمعارضين لا يمكن أن يتجاوز عدد الحاضرين."); $("vFor").classList.add("invalid"); $("vAgainst").classList.add("invalid"); }
+  }
+
+  const err = $("voteError");
+  if (errors.length) {
+    err.hidden = false; err.innerHTML = errors.join("<br>");
+    $("vAbstain").textContent = "—";
+    setVerdict("idle", "—", "صحّحي البيانات لعرض النتيجة");
+    $("vSteps").innerHTML = ""; $("progressWrap").hidden = true; drawPie(0, 0, 0);
+    setHallVerdict("idle", "صحّحي البيانات لعرض القاعة");
+    return;
+  }
+  err.hidden = true;
+
+  const abstain = present - yes - no;
+  $("vAbstain").textContent = abstain;
+  drawPie(yes, no, abstain);
+
+  const steps = [];
+  // الخطوة 1: فحص النصاب القانوني (أغلبية الأعضاء = أكثر من النصف)
+  const quorum = Math.floor(total / 2) + 1;
+  const hasQuorum = present >= quorum;
+  steps.push({ pass: hasQuorum, text: `النصاب القانوني = ⌊${total} ÷ 2⌋ + 1 = <b>${quorum}</b> عضوًا، والحاضرون <b>${present}</b> ← ${hasQuorum ? "اكتمل النصاب" : "لم يكتمل النصاب"}` });
+
+  if (!hasQuorum) {
+    setVerdict("warn", "⚠️ الجلسة غير قانونية: لم يكتمل النصاب", `يلزم حضور ${quorum} عضوًا على الأقل من أصل ${total}`);
+    renderSteps(steps); $("progressWrap").hidden = true;
+    hallStatic({ total, present, yes, no, need: null, status: "noq", quorum });
+    return;
+  }
+
+  // الخطوة 2: حساب الحد المطلوب حسب نوع القرار
+  const n = rule.base === "present" ? present : total;
+  const need = rule.need(n);
+  steps.push({ pass: null, text: `نوع القرار: <b>${rule.name}</b> — ${rule.rule} (الأساس: ${baseLabel(rule.base)} = ${n})` });
+  const passed = yes >= need;
+  steps.push({ pass: passed, text: `الحد المطلوب = ${rule.formula(n)} = <b>${need}</b> صوتًا، والمؤيدون <b>${yes}</b> ← ${passed ? "تحقق الشرط" : `لم يتحقق الشرط (ينقص ${need - yes})`}` });
+
+  renderSteps(steps);
+  setVerdict(passed ? "ok" : "bad", passed ? "✅ القرار مُعتمد" : "❌ القرار مرفوض",
+    `${yes} مؤيد من ${need} مطلوب · ${no} معارض · ${abstain} ممتنع`);
+
+  // شريط التقدم: نسبة التأييد مقارنة بالحد المطلوب
+  $("progressWrap").hidden = false;
+  const fillPct = n ? Math.min(100, yes / n * 100) : 0;
+  const markPct = n ? Math.min(100, need / n * 100) : 0;
+  $("pFill").style.width = fillPct + "%";
+  $("pFill").classList.toggle("over", passed);
+  $("pMarker").style.insetInlineStart = `calc(${markPct}% - 1.5px)`;
+  $("pMarker").dataset.label = `المطلوب ${need}`;
+  $("pLabelA").textContent = `المؤيدون: ${yes} (${fillPct.toFixed(0)}%)`;
+  $("pLabelB").textContent = `من ${n}`;
+
+  // تحديث القاعة المرئية
+  hallStatic({ total, present, yes, no, need, status: passed ? "ok" : "bad" });
+}
+
+function setVerdict(kind, big, sub) {
+  $("verdict").className = "verdict " + kind;
+  $("verdict").innerHTML = `<div class="big">${big}</div>${sub ? `<div class="sub">${sub}</div>` : ""}`;
+}
+function renderSteps(steps) {
+  $("vSteps").innerHTML = steps.map((s, i) =>
+    `<li class="${s.pass === true ? "pass" : s.pass === false ? "fail" : ""}"><span class="dot">${i + 1}</span><span>${s.text}</span></li>`).join("");
+}
+
+// رسم بياني دائري بسيط بـ SVG
+function drawPie(yes, no, abs) {
+  const total = yes + no + abs;
+  const parts = [
+    { v: yes, c: "#1E8E5A", l: "مؤيد" },
+    { v: no, c: "#C0392B", l: "معارض" },
+    { v: abs, c: "#A9B8C6", l: "ممتنع" },
+  ];
+  const r = 15.9155, C = 100; // محيط الدائرة = 100 لتسهيل النسب
+  let offset = 25, svg = `<circle cx="21" cy="21" r="${r}" fill="none" stroke="#E3ECF4" stroke-width="7"/>`;
+  if (total > 0) parts.forEach(p => {
+    const pct = p.v / total * C;
+    if (pct > 0) svg += `<circle cx="21" cy="21" r="${r}" fill="none" stroke="${p.c}" stroke-width="7" stroke-dasharray="${pct} ${C - pct}" stroke-dashoffset="${offset}"/>`;
+    offset -= pct;
+  });
+  svg += `<text x="21" y="20" text-anchor="middle" font-size="7" font-weight="700" fill="#0D2B4E">${total}</text><text x="21" y="26.5" text-anchor="middle" font-size="3.6" fill="#5B6B7D">صوتًا</text>`;
+  $("pie").innerHTML = svg;
+  $("legend").innerHTML = parts.map(p =>
+    `<span><i style="background:${p.c}"></i>${p.l}: <b>${p.v}</b>${total ? ` (${(p.v / total * 100).toFixed(0)}%)` : ""}</span>`).join("");
+}
+
+
+/* =========================================================
+   قاعة الجمعية العامة: مقاعد على شكل نصف دائرة، مقعد لكل دولة
+   ترتيب المقاعد من اليمين إلى اليسار: مؤيد ← ممتنع ← معارض ← غائب
+   ========================================================= */
+const HALL = { cx: 210, cy: 228, rIn: 80, rOut: 194, max: 300, angles: [] };
+let seatEls = [], hallN = 0, soundOn = true, audioCtx = null;
+const LIVE = { running: false, skip: false };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// بناء المقاعد لعدد N من الدول
+function buildHall(N) {
+  hallN = N;
+  const svg = $("hall");
+  if (N > HALL.max) {
+    svg.innerHTML = `<text x="210" y="130" text-anchor="middle" fill="#93AFC8" font-size="14">تعرض القاعة حتى ${HALL.max} مقعد</text>`;
+    seatEls = []; return;
+  }
+  // عدد الصفوف يزيد مع عدد الدول، وعدد المقاعد في كل صف يتناسب مع طوله
+  const R = Math.max(1, Math.min(9, Math.round(Math.sqrt(N / 2.2))));
+  const radii = Array.from({ length: R }, (_, i) => R === 1 ? (HALL.rIn + HALL.rOut) / 2 : HALL.rIn + (HALL.rOut - HALL.rIn) * i / (R - 1));
+  const sum = radii.reduce((a, b) => a + b, 0);
+  const counts = radii.map(r => Math.max(1, Math.round(N * r / sum)));
+  let diff = N - counts.reduce((a, b) => a + b, 0), k = R - 1;
+  while (diff !== 0) { const s = Math.sign(diff); if (counts[k] + s >= 1) { counts[k] += s; diff -= s; } k = (k - 1 + R) % R; }
+
+  const pts = [];
+  radii.forEach((r, i) => { const c = counts[i]; for (let j = 0; j < c; j++) pts.push({ r, a: c === 1 ? Math.PI / 2 : Math.PI * j / (c - 1) }); });
+  pts.sort((p, q) => p.a - q.a || q.r - p.r);   // الزاوية 0 = أقصى اليمين
+
+  const gap = R > 1 ? (HALL.rOut - HALL.rIn) / (R - 1) : 40;
+  const arc = Math.min(...radii.map((r, i) => counts[i] > 1 ? Math.PI * r / (counts[i] - 1) : 99));
+  const sr = Math.max(2.2, Math.min(9, gap * 0.42, arc * 0.42));
+
+  let h = pts.map(p => `<circle class="seat empty" cx="${(HALL.cx + p.r * Math.cos(p.a)).toFixed(1)}" cy="${(HALL.cy - p.r * Math.sin(p.a)).toFixed(1)}" r="${sr.toFixed(1)}"/>`).join("");
+  h += `<line id="hallLine" class="hall-line" style="opacity:0"/><text id="hallLineLabel" class="hall-line-label" text-anchor="middle" style="opacity:0"></text>`;
+  // منصة الرئاسة والمطرقة
+  h += `<rect x="172" y="202" width="76" height="30" rx="8" fill="#123D68" stroke="rgba(79,195,210,.5)"/>
+        <text x="210" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#A8E1EA">الرئاسة</text>
+        <g id="gavel" class="gavel"><rect x="232" y="178" width="20" height="9" rx="2" fill="#D9B26A"/><rect x="240" y="186" width="4" height="15" rx="1.5" fill="#9B7640"/></g>`;
+  svg.innerHTML = h;
+  seatEls = [...svg.querySelectorAll(".seat")];
+  HALL.angles = pts.map(p => p.a);
+}
+
+// تصنيف كل مقعد حسب ترتيبه
+function seatCats(total, present, yes, no) {
+  const abs = present - yes - no;
+  return Array.from({ length: total }, (_, i) => i < yes ? "yes" : i < yes + abs ? "abs" : i < present ? "no" : "absent");
+}
+const paint = cats => seatEls.forEach((el, i) => el.setAttribute("class", "seat " + cats[i]));
+
+// خط الحسم: يفصل أول (need) مقعد عن بقية القاعة
+function showLine(need) {
+  const L = $("hallLine"), T = $("hallLineLabel");
+  if (!L) return;
+  if (need == null || need < 1 || need > hallN) { L.style.opacity = 0; T.style.opacity = 0; return; }
+  const A = HALL.angles;
+  const a = need < A.length ? (A[need - 1] + A[need]) / 2 : Math.min(Math.PI, A[need - 1] + 0.04);
+  const c = Math.cos(a), s = Math.sin(a);
+  L.setAttribute("x1", HALL.cx + (HALL.rIn - 12) * c); L.setAttribute("y1", HALL.cy - (HALL.rIn - 12) * s);
+  L.setAttribute("x2", HALL.cx + (HALL.rOut + 12) * c); L.setAttribute("y2", HALL.cy - (HALL.rOut + 12) * s);
+  T.setAttribute("x", Math.max(48, Math.min(372, HALL.cx + (HALL.rOut + 22) * c)));
+  T.setAttribute("y", Math.max(13, HALL.cy - (HALL.rOut + 22) * s));
+  T.textContent = `خط الحسم: ${need}`;
+  L.style.opacity = 1; T.style.opacity = 1;
+}
+
+function setStats(present, total, yes, no, abs) {
+  $("sPresent").innerHTML = `${present}<small> / ${total}</small>`;
+  $("sYes").textContent = yes; $("sNo").textContent = no; $("sAbs").textContent = abs;
+}
+function setHallVerdict(kind, text, sub = "") {
+  const v = $("hallVerdict");
+  v.className = "hall-verdict " + kind;
+  v.innerHTML = text + (sub ? `<small>${sub}</small>` : "");
+}
+
+// العرض الفوري (بدون حركة) عند تغيير الأرقام
+function hallStatic({ total, present, yes, no, need, status, quorum }) {
+  if (LIVE.running) return;
+  if (total !== hallN) buildHall(total);
+  const abs = present - yes - no;
+  paint(seatCats(total, present, yes, no));
+  showLine(status === "noq" ? null : need);
+  setStats(present, total, yes, no, abs);
+  if (status === "ok") setHallVerdict("ok", "✅ القرار مُعتمد", `${yes} صوتًا مؤيدًا، والمطلوب ${need}`);
+  else if (status === "bad") {
+    const miss = need - yes;
+    setHallVerdict("bad", "❌ القرار مرفوض", `لو أيّدت ${miss === 1 ? "دولة واحدة إضافية" : miss === 2 ? "دولتان إضافيتان" : miss + " دول إضافية"} لاعتُمد القرار`);
+  }
+  else setHallVerdict("warn", "⚠️ لم يكتمل النصاب", `حضر ${present} من ${total}، ويلزم ${quorum} على الأقل`);
+}
+
+/* ---------- صوت المطرقة (يُولَّد بالمتصفح، بدون ملفات) ---------- */
+function knock() {
+  if (!soundOn) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = audioCtx.currentTime, o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = "triangle";
+    o.frequency.setValueAtTime(190, t); o.frequency.exponentialRampToValueAtTime(55, t + 0.12);
+    g.gain.setValueAtTime(0.7, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+    o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t + 0.22);
+  } catch (e) { /* المتصفح لا يدعم الصوت */ }
+}
+async function gavel(times) {
+  const g = $("gavel"); if (!g) return;
+  g.style.animationIterationCount = times;
+  g.classList.remove("strike"); g.getBoundingClientRect(); g.classList.add("strike");
+  for (let i = 0; i < times; i++) { await sleep(240); knock(); await sleep(80); }
+}
+$("soundBtn").addEventListener("click", () => {
+  soundOn = !soundOn;
+  $("soundBtn").textContent = soundOn ? "🔊" : "🔇";
+  $("soundBtn").setAttribute("aria-pressed", soundOn);
+});
+
+/* =========================================================
+   الجلسة الحية: نداء الأسماء ← التصويت ← ضربة المطرقة ← الإعلان
+   ========================================================= */
+const shuffle = arr => { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
+const range = n => Array.from({ length: n }, (_, i) => i);
+const setStatus = t => $("hallStatus").textContent = t;
+
+function lockVote(on) {
+  ["vType", "vTotal", "vPresent", "vFor", "vAgainst", "vReset"].forEach(id => $(id).disabled = on);
+  document.querySelectorAll(".scn").forEach(b => b.disabled = on);
+}
+function popIn(el) { el.classList.remove("pop-in"); void el.offsetWidth; el.classList.add("pop-in"); }
+
+async function liveSession() {
+  if (LIVE.running) { LIVE.skip = true; return; }   // الزر يتحول إلى «تخطي»
+  computeVote();
+  if (!$("voteError").hidden) return;
+  const total = +$("vTotal").value, present = +$("vPresent").value, yes = +$("vFor").value, no = +$("vAgainst").value;
+  if (total > HALL.max) { setStatus(`الجلسة الحية متاحة حتى ${HALL.max} دولة`); return; }
+  const rule = RULES.find(r => r.id === $("vType").value);
+  const quorum = Math.floor(total / 2) + 1, hasQuorum = present >= quorum;
+  const need = rule.need(rule.base === "present" ? present : total);
+  const cats = seatCats(total, present, yes, no);
+
+  LIVE.running = true;
+  LIVE.skip = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  lockVote(true);
+  $("liveBtn").textContent = "⏭ تخطي إلى النتيجة";
+  // إخفاء النتيجة الجاهزة حتى لا تُكشف قبل الإعلان
+  setVerdict("idle", "⏳ الجلسة منعقدة…", "تابعي القاعة");
+  $("vSteps").innerHTML = ""; $("progressWrap").hidden = true; drawPie(0, 0, 0);
+
+  if (total !== hallN) buildHall(total);
+  seatEls.forEach(el => el.setAttribute("class", "seat empty"));
+  showLine(null); setStats(0, total, 0, 0, 0);
+  setHallVerdict("idle", `البند: ${rule.name}`);
+  $("hallCard").scrollIntoView({ behavior: "smooth", block: "start" });
+
+  // 1) نداء الأسماء وتسجيل الحضور
+  setStatus("🔔 نداء الأسماء: تسجيل حضور الدول الأعضاء…");
+  let d = Math.max(15, Math.min(110, 2000 / Math.max(present, 1)));
+  const roll = shuffle(range(present));
+  for (let k = 0; k < roll.length; k++) {
+    seatEls[roll[k]].setAttribute("class", "seat pending pop");
+    setStats(k + 1, total, 0, 0, 0);
+    if (!LIVE.skip) await sleep(d);
+  }
+  for (let i = present; i < total; i++) seatEls[i].setAttribute("class", "seat absent");
+  if (!LIVE.skip) await sleep(500);
+
+  if (!hasQuorum) {
+    setStatus(`حضر ${present} من ${total} والنصاب ${quorum}: تُرفع الجلسة دون تصويت`);
+    await gavel(1);
+    return finishLive();
+  }
+
+  // 2) التصويت: تظهر الأصوات تباعًا في أنحاء القاعة
+  showLine(need);
+  setStatus(`✔ اكتمل النصاب. بدأ التصويت، والحد المطلوب ${need} صوتًا`);
+  if (!LIVE.skip) await sleep(800);
+  d = Math.max(20, Math.min(160, 3200 / Math.max(present, 1)));
+  let cy = 0, cn = 0, ca = 0;
+  for (const i of shuffle(range(present))) {
+    const c = cats[i];
+    seatEls[i].setAttribute("class", "seat " + c + " pop");
+    if (c === "yes") cy++; else if (c === "no") cn++; else ca++;
+    setStats(present, total, cy, cn, ca);
+    if (!LIVE.skip) await sleep(d);
+  }
+
+  // 3) المطرقة والإعلان
+  setStatus("⚖ انتهى التصويت، ورئيس الجلسة يعلن النتيجة");
+  if (!LIVE.skip) await sleep(600);
+  await gavel(3);
+  setStatus("");
+  finishLive();
+}
+
+function finishLive() {
+  LIVE.running = false; LIVE.skip = false;
+  lockVote(false);
+  $("liveBtn").textContent = "▶ بدء الجلسة الحية";
+  computeVote();
+  popIn($("hallVerdict")); popIn($("verdict"));
+}
+$("liveBtn").addEventListener("click", liveSession);
+
+/* =========================================================
+   سيناريوهات جاهزة من جدول أعمال الجمعية العامة
+   ========================================================= */
+const SCENARIOS = [
+  { ico: "🌍", title: "طلب انضمام دولة جديدة", type: "newMember", total: 30, present: 26, yes: 19, no: 4,
+    brief: "تصوّت الجمعية العامة على طلب دولة الانضمام إلى المنظمة بعد توقيعها على الميثاق." },
+  { ico: "💰", title: "اعتماد ميزانية 2027", type: "budget", total: 30, present: 24, yes: 15, no: 6,
+    brief: "اعتماد الميزانية للسنة المالية من أول يناير إلى آخر ديسمبر 2027." },
+  { ico: "📜", title: "تعديل الميثاق: لجنة للذكاء الاصطناعي", type: "amend", total: 30, present: 27, yes: 21, no: 3,
+    brief: "مقترح بإضافة لجنة فنية متخصصة في الذكاء الاصطناعي ترفع توصياتها إلى المجلس التنفيذي." },
+  { ico: "🎤", title: "إطلاق منتدى المستقبل الدولي", type: "ordinary", total: 30, present: 18, yes: 12, no: 4,
+    brief: "قرار بإطلاق المنتدى لجمع الخبراء وصناع القرار لتبادل المعرفة." },
+  { ico: "⏸", title: "تعليق عضوية دولة", type: "suspend", total: 30, present: 22, yes: 14, no: 5,
+    brief: "النظر في تعليق عضوية دولة لم تلتزم بأحكام الميثاق." },
+  { ico: "🪑", title: "جلسة بلا نصاب", type: "ordinary", total: 30, present: 13, yes: 10, no: 2,
+    brief: "دُعيت الدول الأعضاء للتصويت على قرار عادي، لكن الحضور لم يبلغ أغلبية الأعضاء." },
+];
+const DEFAULT_AGENDA = `<b>بند مخصص:</b> أدخلي الأرقام يدويًا أو اختاري سيناريو جاهزًا`;
+$("scenarios").innerHTML = SCENARIOS.map((sc, i) => `
+  <button class="scn" type="button" data-i="${i}">
+    <div class="ico">${sc.ico}</div><b>${sc.title}</b>
+    <span class="tag">${RULES.find(r => r.id === sc.type).name}</span>
+  </button>`).join("");
+$("agenda").innerHTML = DEFAULT_AGENDA;
+document.querySelectorAll(".scn").forEach(btn => btn.addEventListener("click", () => {
+  const sc = SCENARIOS[+btn.dataset.i];
+  $("vType").value = sc.type; $("vTotal").value = sc.total; $("vPresent").value = sc.present;
+  $("vFor").value = sc.yes; $("vAgainst").value = sc.no;
+  document.querySelectorAll(".scn").forEach(b => b.classList.toggle("active", b === btn));
+  $("agenda").innerHTML = `<b>البند المطروح:</b> ${sc.title} — ${sc.brief}`;
+  setStatus("اضغطي «بدء الجلسة الحية» لمشاهدة التصويت");
+  computeVote();
+  $("hallCard").scrollIntoView({ behavior: "smooth", block: "start" });
+}));
+// عند الإدخال اليدوي يصبح البند مخصصًا
+function markCustom() {
+  document.querySelectorAll(".scn").forEach(b => b.classList.remove("active"));
+  $("agenda").innerHTML = DEFAULT_AGENDA; setStatus("");
+}
+["vType", "vTotal", "vPresent", "vFor", "vAgainst"].forEach(id => $(id).addEventListener("input", markCustom));
+
+["vType", "vTotal", "vPresent", "vFor", "vAgainst"].forEach(id => $(id).addEventListener("input", computeVote));
+$("vReset").addEventListener("click", () => {
+  $("vTotal").value = 30; $("vPresent").value = 20; $("vFor").value = 11; $("vAgainst").value = 9; $("vType").value = "ordinary";
+  markCustom();
+  computeVote();
+});
+computeVote();
+
+/* =========================================================
+   الأداة 2: محاكي تسوية النزاع
+   ========================================================= */
+const STAGES = [
+  { name: "المشاورات المباشرة", desc: "حوار بين الأطراف المعنية للوصول إلى تسوية." },
+  { name: "الوساطة", desc: "الاستعانة بطرف محايد لتقريب وجهات النظر." },
+  { name: "المساعي الحميدة", desc: "تدخل المنظمة لتسهيل التواصل بين الأطراف." },
+  { name: "هيئة تسوية المنازعات", desc: "تُحال إليها النزاعات عند تعذر الحل الودي. تتكون من خمسة قضاة مستقلين تنتخبهم الجمعية العامة، وتفصل في النزاع خلال ستة أشهر، وأحكامها نهائية وملزمة للأطراف." },
+];
+let caseCounter = 0;   // عدّاد أرقام القضايا في هذه الجلسة
+let C = null;          // بيانات القضية الحالية
+
+$("openCase").addEventListener("click", () => {
+  const a = $("dA").value.trim(), b = $("dB").value.trim(), topic = $("dTopic").value.trim();
+  const errs = [];
+  if (!a || !b) errs.push("أدخلي اسمي الدولتين.");
+  if (a && b && a === b) errs.push("لا يمكن أن يكون طرفا النزاع الدولة نفسها.");
+  if (!topic) errs.push("أدخلي موضوع الخلاف.");
+  $("caseError").hidden = !errs.length; $("caseError").innerHTML = errs.join("<br>");
+  if (errs.length) return;
+
+  const now = new Date();
+  caseCounter++;
+  C = {
+    id: `IODI-DS-${now.getFullYear()}-${pad(caseCounter, 3)}`,
+    a, b, topic, opened: now,
+    stage: 0,                // رقم المرحلة الحالية (0..3)
+    status: "active",        // active | settled | ruled
+    mediator: "",
+    judges: ["القاضي 1", "القاضي 2", "القاضي 3", "القاضي 4", "القاضي 5"],
+    referredAt: null,        // تاريخ الإحالة إلى الهيئة
+    ruling: "",
+    log: [],
+  };
+  addLog(-1, `فُتح ملف النزاع رقم ${C.id} بين (${a}) و(${b}) بشأن: ${topic}. وبدأت مرحلة المشاورات المباشرة.`);
+  $("caseForm").hidden = true; $("caseArea").hidden = false;
+  renderCase();
+});
+
+// إضافة سطر للسجل بصياغة رسمية
+function addLog(stageIdx, text, note = "", kind = "") {
+  const label = stageIdx < 0 ? "فتح الملف" : `المرحلة ${stageIdx + 1}: ${STAGES[stageIdx].name}`;
+  C.log.push({ when: new Date(), label, text, note, kind });
+}
+
+function renderCase() {
+  $("caseId").textContent = C.id;
+  $("caseMeta").innerHTML = `${esc(C.a)} ↔ ${esc(C.b)} · فُتح في ${fmtDate(C.opened)}`;
+  const badge = $("caseBadge");
+  badge.className = "badge " + C.status;
+  badge.textContent = { active: "قيد النظر", settled: "تمت التسوية", ruled: "صدر الحكم النهائي" }[C.status];
+
+  // المخطط الزمني
+  $("timeline").innerHTML = STAGES.map((s, i) => {
+    let cls = "upcoming", mark = i + 1;
+    if (i < C.stage) { cls = "done"; mark = "✓"; }
+    else if (i === C.stage) {
+      if (C.status === "active") cls = "current";
+      else { cls = C.status === "settled" ? "done settled" : "done"; mark = "✓"; }
+    }
+    return `<div class="t-step ${cls}"><div class="t-circle">${mark}</div><div class="t-title">${s.name}</div></div>`;
+  }).join("");
+
+  // لوحة المرحلة الحالية
+  const area = $("stageArea");
+  if (C.status === "settled") {
+    area.innerHTML = `<div class="final-box settled"><div class="big">✔ تمّت تسوية النزاع وديًّا</div><p>في مرحلة: ${STAGES[C.stage].name}</p></div>`;
+  } else if (C.status === "ruled") {
+    area.innerHTML = `<div class="final-box ruled"><div class="big">⚖ صدر الحكم النهائي</div><p>${esc(C.ruling)}</p><p style="color:var(--sky-soft);font-size:13px">الحكم نهائي وملزم للأطراف</p></div>`;
+  } else {
+    const s = STAGES[C.stage], isLast = C.stage === 3;
+    let extra = "";
+    if (C.stage === 1) extra = `<div class="field"><label for="mediator">اسم الوسيط المحايد</label><input class="input" id="mediator" value="${esc(C.mediator)}" placeholder="مثال: دولة محايدة أو شخصية دولية"></div>`;
+    if (isLast) {
+      const end = new Date(C.referredAt); end.setMonth(end.getMonth() + 6);
+      extra = `
+        <div class="field"><label>قضاة الهيئة الخمسة (منتخبون من الجمعية العامة)</label>
+          <div class="judges">${C.judges.map((j, i) => `
+            <div class="judge"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>
+            <input data-judge="${i}" value="${esc(j)}" aria-label="اسم القاضي ${i + 1}"></div>`).join("")}
+          </div></div>
+        <div class="deadline"><span>⏱ <strong>المهلة: 6 أشهر</strong> من تاريخ الإحالة (${fmtDate(C.referredAt)})</span><span>آخر موعد للفصل: <strong>${fmtDate(end)}</strong></span></div>
+        <div class="field"><label for="ruling">نص الحكم</label><textarea class="input" id="ruling" placeholder="اكتبي منطوق الحكم">${esc(C.ruling)}</textarea></div>`;
+    }
+    area.innerHTML = `
+      <div class="stage-panel">
+        <h4>المرحلة ${C.stage + 1}: ${s.name}</h4>
+        <p class="desc">${s.desc}</p>
+        ${extra}
+        <div class="field"><label for="note">ملاحظات (اختياري)</label><textarea class="input" id="note" placeholder="أضيفي أي تفاصيل تُدوَّن في السجل"></textarea></div>
+        <div id="stageErr" class="alert alert-bad" hidden></div>
+        <div class="btn-row">
+          ${isLast
+            ? `<button class="btn btn-primary" id="issueRuling" type="button">إصدار الحكم النهائي</button>`
+            : `<button class="btn btn-ok" id="settle" type="button">تمّت التسوية</button>
+               <button class="btn btn-bad" id="escalate" type="button">تعذّر الحل – انتقل للمرحلة التالية</button>`}
+        </div>
+      </div>`;
+    bindStage();
+  }
+  renderLog();
+}
+
+function bindStage() {
+  const note = () => $("note").value.trim();
+  const med = $("mediator");
+  if (med) med.addEventListener("input", () => C.mediator = med.value.trim());
+  document.querySelectorAll("[data-judge]").forEach(inp =>
+    inp.addEventListener("input", () => C.judges[+inp.dataset.judge] = inp.value.trim() || `القاضي ${+inp.dataset.judge + 1}`));
+  const rul = $("ruling");
+  if (rul) rul.addEventListener("input", () => C.ruling = rul.value);
+
+  const settle = $("settle");
+  if (settle) settle.addEventListener("click", () => {
+    if (C.stage === 1 && !C.mediator) return showStageErr("أدخلي اسم الوسيط أولًا.");
+    const via = C.stage === 1 ? ` بوساطة (${C.mediator})` : "";
+    addLog(C.stage, `توصّل الطرفان (${C.a}) و(${C.b}) إلى تسوية ودية${via}، وأُغلق ملف النزاع بنجاح.`, note(), "ok");
+    C.status = "settled"; renderCase();
+  });
+
+  const esc8 = $("escalate");
+  if (esc8) esc8.addEventListener("click", () => {
+    if (C.stage === 1 && !C.mediator) return showStageErr("أدخلي اسم الوسيط أولًا.");
+    const via = C.stage === 1 ? ` رغم وساطة (${C.mediator})` : "";
+    const next = STAGES[C.stage + 1].name;
+    addLog(C.stage, `تعذّر التوصل لتسوية بين (${C.a}) و(${C.b})${via}، وأُحيل الملف إلى ${next}.`, note());
+    C.stage++;
+    if (C.stage === 3) {
+      C.referredAt = new Date();
+      const end = new Date(C.referredAt); end.setMonth(end.getMonth() + 6);
+      addLog(3, `أُحيل النزاع إلى هيئة تسوية المنازعات المكوّنة من خمسة قضاة مستقلين، على أن تفصل فيه في موعد أقصاه ${fmtDate(end)}.`);
+    }
+    renderCase();
+  });
+
+  const iss = $("issueRuling");
+  if (iss) iss.addEventListener("click", () => {
+    C.ruling = $("ruling").value.trim();
+    if (!C.ruling) return showStageErr("اكتبي نص الحكم قبل إصداره.");
+    addLog(3, `أصدرت هيئة تسوية المنازعات (${C.judges.join("، ")}) حكمها النهائي الملزم في النزاع بين (${C.a}) و(${C.b}): ${C.ruling}`, note(), "final");
+    C.status = "ruled"; renderCase();
+  });
+}
+function showStageErr(msg) { const e = $("stageErr"); e.hidden = false; e.textContent = msg; }
+
+function renderLog() {
+  $("log").innerHTML = C.log.length ? [...C.log].reverse().map(e => `
+    <li class="${e.kind}">
+      <div class="when">${fmtDateTime(e.when)}</div>
+      <div><span class="stage">${esc(e.label)}</span> | ${esc(e.text)}</div>
+      ${e.note ? `<div style="color:var(--muted);font-size:13px;margin-top:4px">ملاحظات: ${esc(e.note)}</div>` : ""}
+    </li>`).join("") : `<li class="empty">لا توجد إجراءات بعد</li>`;
+}
+
+$("newCase").addEventListener("click", () => {
+  if (C && C.status === "active" && !confirm("القضية الحالية لم تُغلق بعد. هل تريدين بدء قضية جديدة؟")) return;
+  C = null; $("dA").value = $("dB").value = $("dTopic").value = "";
+  $("caseArea").hidden = true; $("caseForm").hidden = false;
+});
+
+// طباعة محضر القضية
+$("printCase").addEventListener("click", () => {
+  const statusTxt = { active: "قيد النظر", settled: "تمت التسوية وديًّا", ruled: "صدر الحكم النهائي" }[C.status];
+  $("caseReport").innerHTML = `
+    <div class="rep-head">${logoHTML()}<div><h1>المنظمة الدولية للتنمية والابتكار</h1><p>International Organization for Development &amp; Innovation · IODI</p></div></div>
+    <div class="rep-title">محضر قضية نزاع</div>
+    <table class="rep-table">
+      <tr><th>رقم القضية</th><td dir="ltr" style="text-align:right">${C.id}</td><th>تاريخ الفتح</th><td>${fmtDateTime(C.opened)}</td></tr>
+      <tr><th>الطرف الأول</th><td>${esc(C.a)}</td><th>الطرف الثاني</th><td>${esc(C.b)}</td></tr>
+      <tr><th>موضوع الخلاف</th><td colspan="3">${esc(C.topic)}</td></tr>
+      <tr><th>الحالة</th><td>${statusTxt}</td><th>المرحلة الأخيرة</th><td>${STAGES[C.stage].name}</td></tr>
+      ${C.mediator ? `<tr><th>الوسيط</th><td colspan="3">${esc(C.mediator)}</td></tr>` : ""}
+      ${C.status === "ruled" ? `<tr><th>منطوق الحكم</th><td colspan="3">${esc(C.ruling)} — (حكم نهائي وملزم للأطراف)</td></tr>` : ""}
+    </table>
+    <table class="rep-table rep-log">
+      <tr><th style="width:18%">التاريخ والوقت</th><th style="width:22%">المرحلة</th><th>الإجراء</th></tr>
+      ${C.log.map(e => `<tr><td dir="ltr" style="text-align:right">${fmtDateTime(e.when)}</td><td>${esc(e.label)}</td><td>${esc(e.text)}${e.note ? `<br><small>ملاحظات: ${esc(e.note)}</small>` : ""}</td></tr>`).join("")}
+    </table>
+    <div class="rep-sign"><div><div class="line"></div>الأمين العام</div><div><div class="line"></div>رئيس هيئة تسوية المنازعات</div></div>`;
+  doPrint("case", "@page{size:A4 portrait;margin:14mm}");
+});
+
+/* =========================================================
+   الأداة 3: شهادة العضوية
+   ========================================================= */
+const TYPES = { F: "عضو مؤسس", M: "عضو عامل", O: "عضو مراقب", P: "شريك استراتيجي" };
+const certSeq = { F: 0, M: 0, O: 0, P: 0 };  // عدّاد مستقل لكل نوع
+let certNo = "";
+
+$("cDate").valueAsDate = new Date();
+
+// توليد رقم عضوية جديد بصيغة IODI-2026-M0001
+function newCertNo() {
+  const t = $("cType").value;
+  certSeq[t]++;
+  const year = ($("cDate").value || "").slice(0, 4) || new Date().getFullYear();
+  certNo = `IODI-${year}-${t}${pad(certSeq[t], 4)}`;
+}
+
+// زخرفة هندسية مستوحاة من دوائر الشعار وخطوطه
+const decoSVG = `<svg viewBox="0 0 200 200" fill="none" stroke="#1F6FB2" stroke-width="3">
+  <circle cx="100" cy="100" r="95"/><circle cx="100" cy="100" r="75" stroke="#4FC3D2"/><circle cx="100" cy="100" r="55"/>
+  <ellipse cx="100" cy="100" rx="25" ry="55"/><path d="M45 100h110M100 45v110M55 75h90M55 125h90"/></svg>`;
+
+// الختم الدائري
+const stampSVG = `<svg class="stamp" viewBox="0 0 120 120">
+  <defs><path id="stampPath" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs>
+  <circle cx="60" cy="60" r="56" fill="none" stroke="#1F6FB2" stroke-width="3"/>
+  <circle cx="60" cy="60" r="35" fill="none" stroke="#1F6FB2" stroke-width="1.5"/>
+  <text font-size="11.5" font-weight="700" fill="#1F6FB2" style="direction:ltr;unicode-bidi:plaintext"><textPath href="#stampPath" startOffset="0">IODI • الرياض • IODI • الرياض •</textPath></text>
+  <text x="60" y="58" text-anchor="middle" font-size="15" font-weight="700" fill="#0E3766">IODI</text>
+  <text x="60" y="73" text-anchor="middle" font-size="10" font-weight="700" fill="#1F6FB2">الرياض</text></svg>`;
+
+function certHTML() {
+  const name = $("cName").value.trim() || "اسم الدولة أو الجهة";
+  const nameEn = $("cNameEn").value.trim();
+  const type = TYPES[$("cType").value];
+  const d = $("cDate").value ? new Date($("cDate").value + "T12:00:00") : new Date();
+  const greg = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { day: "numeric", month: "long", year: "numeric" }).format(d);
+  const hijri = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn", { day: "numeric", month: "long", year: "numeric" }).format(d);
+  return `
+    <div class="cert-deco tl">${decoSVG}</div><div class="cert-deco br">${decoSVG}</div>
+    <div class="cert-frame"></div>
+    <div class="cert-watermark">${decoSVG}</div>
+    <div class="cert-body">
+      ${logoHTML("cert-logo")}
+      <div class="cert-org">المنظمة الدولية للتنمية والابتكار</div>
+      <div class="cert-org-en">International Organization for Development &amp; Innovation</div>
+      <div class="cert-title">شهادة عضوية</div>
+      <div class="cert-title-en">Certificate of Membership</div>
+      <div class="cert-rule"></div>
+      <div class="cert-text">
+        تشهد المنظمة الدولية للتنمية والابتكار بأن
+        <span class="cert-name">${esc(name)}</span>
+        ${nameEn ? `<span class="cert-name-en">${esc(nameEn)}</span>` : ""}
+        قد انضمّت إليها بصفة <span class="cert-type">${type}</span>، وفقًا لأحكام الميثاق التأسيسي، ملتزمةً بمبادئ المنظمة
+        في المساواة في السيادة والشفافية والمساءلة وحسن النية في تنفيذ الالتزامات.
+      </div>
+      <div class="cert-meta">
+        <span>رقم العضوية: <b class="ltr">${certNo}</b></span>
+        <span>التاريخ: <b>${hijri}</b> الموافق <b>${greg}</b></span>
+      </div>
+      <div class="cert-note">وثيقة محاكاة لمشروع أكاديمي، وليست عضوية قانونية قائمة</div>
+      <div class="cert-foot">
+        <div class="sig"><div class="line"></div>الأمين العام</div>
+        ${stampSVG}
+        <div class="sig"><div class="line"></div>رئيس الجمعية العامة</div>
+      </div>
+    </div>
+    <div class="cert-slogan">«نبتكر اليوم لنصنع مستقبل الغد»</div>`;
+}
+
+function renderCert() {
+  $("cNoBox").textContent = certNo;
+  $("certificate").innerHTML = certHTML();
+}
+
+// تصغير الشهادة لتناسب عرض الشاشة (المعاينة فقط)
+function fitCert() {
+  const stage = $("certStage"), scaler = $("certScaler");
+  const w = stage.clientWidth - 28;
+  if (w <= 0) return;
+  const s = Math.min(1, w / 1123);
+  scaler.style.transform = `scale(${s})`;
+  stage.style.height = (794 * s + 28) + "px";
+}
+window.addEventListener("resize", fitCert);
+
+// تخطيط عمود واحد على الشاشات الصغيرة
+const mq = window.matchMedia("(max-width:900px)");
+const setCertGrid = () => $("certGrid").style.gridTemplateColumns = mq.matches ? "1fr" : "minmax(0,320px) minmax(0,1fr)";
+mq.addEventListener("change", () => { setCertGrid(); fitCert(); }); setCertGrid();
+
+["cName", "cNameEn"].forEach(id => $(id).addEventListener("input", renderCert));
+$("cType").addEventListener("change", () => { newCertNo(); renderCert(); });
+$("cDate").addEventListener("change", () => { newCertNo(); renderCert(); });
+$("newCert").addEventListener("click", () => { $("cName").value = $("cNameEn").value = ""; newCertNo(); renderCert(); });
+
+function printCertificate() {
+  if (!$("cName").value.trim()) { $("cName").classList.add("invalid"); $("cName").focus(); return; }
+  $("cName").classList.remove("invalid");
+  $("printSheet").innerHTML = `<div class="cert">${certHTML()}</div>`;
+  doPrint("cert", "@page{size:A4 landscape;margin:0}");
+}
+$("printCert").addEventListener("click", printCertificate);
+$("savePdf").addEventListener("click", printCertificate);
+
+newCertNo(); renderCert(); fitCert();
+
+/* =========================================================
+   الطباعة: نحدد ما يُطبع ومقاس الصفحة ثم نفتح نافذة الطباعة
+   ========================================================= */
+function doPrint(what, pageCss) {
+  document.body.dataset.print = what;
+  $("pageStyle").textContent = pageCss;
+  // ننتظر تحميل الصور قبل الطباعة
+  setTimeout(() => window.print(), 150);
+}
+window.addEventListener("afterprint", () => { delete document.body.dataset.print; });
+
+/* =========================================================
+   اختبار ذاتي لقواعد التصويت (يظهر في Console فقط)
+   ========================================================= */
+(function selfTest() {
+  const evalVote = (total, present, yes, type) => {
+    if (present < Math.floor(total / 2) + 1) return "noQuorum";
+    const r = RULES.find(x => x.id === type);
+    return yes >= r.need(r.base === "present" ? present : total) ? "pass" : "fail";
+  };
+  const cases = [
+    [30, 14, 0, "ordinary", "noQuorum"],
+    [30, 20, 11, "ordinary", "pass"],
+    [30, 25, 16, "newMember", "fail"],
+    [30, 28, 22, "dissolve", "fail"],
+    [30, 25, 20, "amend", "pass"],
+  ];
+  cases.forEach((c, i) => console.log(`اختبار ${i + 1}:`, evalVote(c[0], c[1], c[2], c[3]) === c[4] ? "✓ نجح" : "✗ فشل"));
+})();
+</script>
+</body>
+</html>
